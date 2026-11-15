@@ -55,7 +55,7 @@ def get_ytdlp_args(fmt: str, output_pattern: str, source: str) -> list[str]:
         str(YTDLP_BIN), "--no-playlist", "--playlist-items", "1", "--no-warnings",
         "--windows-filenames", "--trim-filenames", "180",
         "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "--extractor-args", "youtube:player_client=android,ios,web"
+        "--extractor-args", "youtube:player_client=visionos,tv,android"
     ]
     node = shutil.which("node") or shutil.which("nodejs")
     if node:
