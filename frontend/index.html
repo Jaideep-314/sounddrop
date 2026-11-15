@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sounddrop — YouTube Video & Audio Downloader</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+    :root{--ink:#17231e;--muted:#718078;--paper:#f3f5ef;--card:#fff;--lime:#d8f27a;--line:#e7ebe4;--green:#347453}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
+    .shell{max-width:1080px;margin:auto;padding:26px 42px 64px}.top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;font:700 20px 'Space Grotesk',sans-serif;letter-spacing:-.7px}.mark{width:32px;height:32px;border-radius:10px;background:var(--lime);display:grid;place-items:center;font-size:16px}
+    .api-status{display:flex;align-items:center;gap:8px;font:11px 'DM Mono',monospace;color:var(--muted);background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:20px}
+    .api-status input{border:none;background:transparent;font:11px 'DM Mono',monospace;color:var(--ink);outline:none;width:220px}
+    .dot{width:7px;height:7px;background:#61a97a;border-radius:50%;box-shadow:0 0 0 3px #61a97a22}
+    main{max-width:760px;margin:60px auto 0}.eyebrow{font:11px 'DM Mono',monospace;color:var(--green);letter-spacing:1.3px;text-transform:uppercase;display:flex;align-items:center;gap:9px}.eyebrow:before{content:'';width:20px;height:1px;background:var(--green)}
+    h1{font:600 clamp(38px,6vw,60px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-3px;margin:18px 0 12px;max-width:670px}h1 em{font-style:normal;color:#7f9d61}
+    .sub{font-size:15px;color:#6c7971;line-height:1.6;margin:0 0 30px;max-width:560px}
+    .panel{background:var(--card);border:1px solid #e9ede6;border-radius:18px;padding:24px;box-shadow:0 14px 50px #233b2610}
+    label{font-size:13px;font-weight:700;display:block;margin-bottom:9px}.hint{float:right;font:11px 'DM Mono',monospace;color:#9aa59d;font-weight:400}
+    textarea{display:block;width:100%;height:130px;resize:vertical;border:1px solid #dfe5dc;border-radius:11px;background:#fbfcfa;padding:14px;font:13px/1.7 'DM Mono',monospace;color:var(--ink);outline:none;transition:.2s;margin-bottom:18px}textarea:focus{border-color:#90a967;box-shadow:0 0 0 3px #d8f27a44}textarea::placeholder{color:#aab3ac}
+    .select-wrap{margin-bottom:18px}
+    select{display:block;width:100%;border:1px solid #dfe5dc;border-radius:11px;background:#fbfcfa;padding:12px 14px;font:500 13px 'DM Sans',sans-serif;color:var(--ink);outline:none;transition:.2s;cursor:pointer}
+    select:focus{border-color:#90a967;box-shadow:0 0 0 3px #d8f27a44}
+    optgroup{font-weight:700;color:var(--green);background:#f2f5ee;padding:6px 0}
+    option{font-weight:500;color:var(--ink);background:#fff;padding:6px 10px}
+    .row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:14px}.note{font-size:12px;color:#87938b;line-height:1.5;max-width:400px}.btn{border:0;border-radius:10px;background:var(--ink);color:#fff;padding:13px 22px;font:600 13px 'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.18s;white-space:nowrap}.btn:hover{background:#30483b;transform:translateY(-1px)}.btn:disabled{opacity:.45;cursor:wait;transform:none}.arrow{font-size:17px;color:var(--lime)}
+    .queue{margin-top:24px;display:none}.queue-head{display:flex;justify-content:space-between;align-items:center;padding:0 2px 9px}.queue-head strong{font-size:12px}.queue-head span{font:10px 'DM Mono',monospace;color:#8a968e}.items{display:grid;gap:8px}.item{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 13px;min-width:0}.num{font:11px 'DM Mono',monospace;color:#a0aaa3;width:22px}.itemtext{min-width:0;flex:1}.item-title{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-state{font:10px 'DM Mono',monospace;color:#98a39b;margin-top:3px}.item.done .item-state{color:#508461}.item.error .item-state{color:#c06b54}.badge{font:9px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.5px;color:#718078;background:#f2f4ef;border-radius:5px;padding:5px 7px}.item.done .badge{background:#edf6ed;color:#477a54}.item.error .badge{background:#fbefec;color:#b15f4c}
+    .foot{margin-top:22px;border-top:1px solid #e1e7df;padding-top:17px;display:flex;justify-content:space-between;color:#98a39b;font-size:11px;line-height:1.5}.foot a{color:#68766d;text-decoration:none}.fine{max-width:540px}.spark{color:#b2c77d;font-size:14px}
+    @media(max-width:600px){.shell{padding:20px 18px 44px}main{margin-top:30px}h1{letter-spacing:-2px}.panel{padding:18px}.row{align-items:stretch;flex-direction:column}.btn{justify-content:center}.hint{display:block;float:none;margin-top:4px}.foot{gap:18px;flex-direction:column}.api-status{width:100%}.api-status input{width:100%}}
+  </style>
+</head>
+<body><div class="shell">
+  <header class="top">
+    <div class="brand"><span class="mark">♫</span> sounddrop</div>
+    <div class="api-status">
+      <span class="dot"></span>
+      <span>API:</span>
+      <input type="text" id="backendInput" placeholder="Backend URL (leave blank for local)">
+    </div>
+  </header>
+  <main>
+    <div class="eyebrow">Video & Audio Downloader</div>
+    <h1>High fidelity.<br><em>Yours to keep.</em></h1>
+    <p class="sub">Download videos or extract audio in any quality or format. Paste YouTube URLs or search phrases below.</p>
+    <section class="panel">
+      <label for="sources">Links or searches <span class="hint">up to 50 · one per line</span></label>
+      <textarea id="sources" placeholder="https://youtube.com/watch?v=…&#10;lofi beats for studying&#10;https://youtu.be/…"></textarea>
+      
+      <div class="select-wrap">
+        <label for="format">Format & Quality <span class="hint">choose video or audio</span></label>
+        <select id="format">
+          <optgroup label="🎬 Video + Audio (Ready to Download)">
+            <option value="video_360p_rec" selected>★ 360p MP4 — Recommended</option>
+          </optgroup>
+          <optgroup label="🎞️ Higher Quality Video — Combine with audio for sound">
+            <option value="video_2160p_webm">2160p60 WEBM • 4K UHD</option>
+            <option value="video_2160p_mp4">2160p60 MP4 (AV1/H.264) • 4K UHD</option>
+            <option value="video_1440p_webm">1440p60 WEBM • 2K QHD</option>
+            <option value="video_1440p_mp4">1440p60 MP4 (AV1/H.264) • 2K QHD</option>
+            <option value="video_1080p_mp4">1080p60 MP4 • 1080p Full HD</option>
+            <option value="video_1080p_webm">1080p60 WEBM • 1080p Full HD</option>
+            <option value="video_720p_mp4">720p60 MP4 • 720p HD</option>
+            <option value="video_720p_webm">720p60 WEBM • 720p HD</option>
+            <option value="video_480p_mp4">480p MP4</option>
+            <option value="video_480p_webm">480p WEBM</option>
+            <option value="video_360p_mp4">360p MP4</option>
+            <option value="video_360p_webm">360p WEBM</option>
+            <option value="video_240p_mp4">240p MP4</option>
+            <option value="video_240p_webm">240p WEBM</option>
+            <option value="video_144p_mp4">144p MP4</option>
+            <option value="video_144p_webm">144p WEBM</option>
+          </optgroup>
+          <optgroup label="🎵 MP3">
+            <option value="mp3_320k">MP3 • 320 kbps (High Quality)</option>
+            <option value="mp3_192k">MP3 • 192 kbps (Medium Quality)</option>
+            <option value="mp3_128k">MP3 • 128 kbps (Standard Quality)</option>
+          </optgroup>
+          <optgroup label="🎧 Audio Only">
+            <option value="m4a_129k">M4A Audio • 129 kbps</option>
+            <option value="m4a_49k">M4A Audio • 49 kbps</option>
+            <option value="opus_155k">Opus Audio • 155 kbps</option>
+            <option value="opus_83k">Opus Audio • 83 kbps</option>
+            <option value="opus_64k">Opus Audio • 64 kbps</option>
+            <option value="wav">WAV Audio (Lossless)</option>
+            <option value="flac">FLAC Audio (Lossless)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="note">High-speed downloading and transcoding with full FFmpeg support.</div>
+        <button id="start" class="btn"><span>Start Download</span><span class="arrow">↗</span></button>
+      </div>
+    </section>
+
+    <section id="queue" class="queue">
+      <div class="queue-head"><strong>Your downloads</strong><span id="count"></span></div>
+      <div id="items" class="items"></div>
+    </section>
+
+    <div class="foot">
+      <span class="fine"><span class="spark">✳</span> Download only media you own or have permission to save.</span>
+      <span>NETLIFY + CLOUD BACKEND</span>
+    </div>
+  </main>
+</div>
+<script>
+const input = document.querySelector('#sources');
+const formatSelect = document.querySelector('#format');
+const button = document.querySelector('#start');
+const queue = document.querySelector('#queue');
+const items = document.querySelector('#items');
+const count = document.querySelector('#count');
+const backendInput = document.querySelector('#backendInput');
+
+// Load stored backend URL
+const savedBackend = localStorage.getItem('sounddrop_backend_url') || '';
+backendInput.value = savedBackend;
+backendInput.addEventListener('change', () => {
+  let val = backendInput.value.trim().replace(/\/+$/, '');
+  localStorage.setItem('sounddrop_backend_url', val);
+});
+
+function getApiEndpoint() {
+  let base = backendInput.value.trim().replace(/\/+$/, '');
+  return base ? `${base}/download` : '/download';
+}
+
+function safeName(s) {
+  return s.replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ').trim().slice(0, 100) || 'media-download';
+}
+
+button.addEventListener('click', async () => {
+  const list = input.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+  if (!list.length) { input.focus(); return; }
+  if (list.length > 50) { alert('Please enter no more than 50 links or searches.'); return; }
+
+  const chosenFormat = formatSelect.value;
+  button.disabled = true;
+  button.querySelector('span').textContent = 'Processing…';
+  queue.style.display = 'block';
+  items.innerHTML = '';
+
+  const rows = list.map((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML = `<span class="num">${String(i + 1).padStart(2, '0')}</span><div class="itemtext"><div class="item-title"></div><div class="item-state">Waiting</div></div><span class="badge">queued</span>`;
+    row.querySelector('.item-title').textContent = s;
+    items.append(row);
+    return row;
+  });
+
+  count.textContent = `0 / ${list.length} complete`;
+  let done = 0;
+
+  for (let i = 0; i < list.length; i++) {
+    const row = rows[i];
+    const state = row.querySelector('.item-state');
+    const badge = row.querySelector('.badge');
+    state.textContent = 'Downloading and processing format…';
+    badge.textContent = 'working';
+
+    try {
+      const endpoint = getApiEndpoint();
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: list[i], format: chosenFormat })
+      });
+
+      if (!res.ok) {
+        let msg = 'Download failed';
+        try { msg = (await res.json()).error || msg; } catch {}
+        throw Error(msg);
+      }
+
+      const blob = await res.blob();
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const encoded = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+      let name = encoded ? decodeURIComponent(encoded[1]) : safeName(list[i]);
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+
+      row.classList.add('done');
+      state.textContent = `Downloaded: ${name}`;
+      badge.textContent = 'done';
+    } catch (e) {
+      row.classList.add('error');
+      state.textContent = e.message.slice(0, 180);
+      badge.textContent = 'error';
+    }
+    done++;
+    count.textContent = `${done} / ${list.length} complete`;
+  }
+
+  button.disabled = false;
+  button.querySelector('span').textContent = 'Start Download';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.mp4
+*.webm
+*.mp3
+*.m4a
+*.opus
+*.wav
+*.part
