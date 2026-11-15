@@ -29,6 +29,11 @@ def normalize_source(value):
         }:
             raise ValueError("Only YouTube links are supported.")
         parsed = urlparse(value)
+        # Normalize youtu.be short links
+        if host == "youtu.be":
+            video_id = parsed.path.strip("/").split("/")[0]
+            if video_id:
+                return f"https://www.youtube.com/watch?v={video_id}"
         # Normalize YouTube Shorts to standard watch URL
         if parsed.path.startswith("/shorts/"):
             parts = parsed.path.strip("/").split("/")
