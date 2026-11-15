@@ -29,6 +29,12 @@ def normalize_source(value):
         }:
             raise ValueError("Only YouTube links are supported.")
         parsed = urlparse(value)
+        # Normalize YouTube Shorts to standard watch URL
+        if parsed.path.startswith("/shorts/"):
+            parts = parsed.path.strip("/").split("/")
+            if len(parts) >= 2:
+                video_id = parts[1]
+                return f"https://www.youtube.com/watch?v={video_id}"
         if host in {"youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"} and parsed.path.rstrip("/") == "/results":
             query = parse_qs(parsed.query).get("search_query", [""])[0].strip()
             if query:
@@ -43,9 +49,10 @@ def get_ytdlp_args(fmt: str, output_pattern: str, source: str) -> list[str]:
     base_args = [
         str(YTDLP_BIN), "--no-playlist", "--playlist-items", "1", "--no-warnings",
         "--windows-filenames", "--trim-filenames", "180",
-        "--extractor-args", "youtube:player_client=android,web"
+        "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+        "--extractor-args", "youtube:player_client=android,ios,web"
     ]
-    node = shutil.which("node")
+    node = shutil.which("node") or shutil.which("nodejs")
     if node:
         base_args.extend(["--js-runtimes", "node:" + node])
 
